@@ -17,13 +17,15 @@ const provider = (
     selectedAddress,
 
     request(props: { method: any; params: string[] }) {
-      log(`request!![${props.method}]`)
+      log(`request[${props.method}]`)
       switch (props.method) {
         case 'eth_requestAccounts':
         case 'eth_accounts':
+          return Promise.resolve([this.selectedAddress])
         case 'net_version':
+          return Promise.resolve(this.networkVersion)
         case 'eth_chainId':
-          return Promise.resolve(true)
+          return Promise.resolve(this.chainId)
 
         case 'personal_sign': {
           const privKey = Buffer.from(privateKey, 'hex');

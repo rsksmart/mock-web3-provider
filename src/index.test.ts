@@ -10,21 +10,45 @@ describe('provider', () => {
     expect(provider).toBeDefined()
   })
 
-  it('has the correct address', () => {
-    expect(provider.selectedAddress).toBe(address)
+  describe('eth_accounts & eth_requestAccounts', () => {
+    it('is correctly set', () => {
+      expect(provider.selectedAddress).toBe(address)
+    })
 
-    provider.sendAsync({ method: 'eth_accounts' }, (_err: Error, success: string[]) => 
-      expect(success).toEqual({ "result": [ address ] })
-    )
+    it('is correct with request', async () => {
+      const response = await provider.request({ method: 'eth_accounts', params: [] })
+      expect(response).toEqual([ address ])
+
+      const response2 = await provider.request({ method: 'eth_requestAccounts', params: [] })
+      expect(response2).toEqual([ address ])
+    })
+
+    it('is correct with sendAsync', () => {
+      provider.sendAsync({ method: 'eth_accounts' }, (_err: Error, success: string[]) => 
+        expect(success).toEqual({ "result": [ address ] })
+      )
+    })
   })
 
-  it('has the correct chainId', () => {
-    expect(provider.networkVersion).toBe(31)
-    expect(parseInt(provider.chainId)).toBe(31)
+  describe('eth_chainId & net_version', () => {
+    it('is correctly set', () => {
+      expect(provider.networkVersion).toBe(31)
+      expect(parseInt(provider.chainId)).toBe(31)
+    })
 
-    provider.sendAsync({ method: 'net_version' }, (_err: Error, success: number) =>
-      expect(success).toEqual({ result: 31 })
-    )
+    it('is correct with response', async() => {
+      const response = await provider.request({ method: 'net_version', params: [] })
+      expect(response).toEqual(31)
+
+      const response2 = await provider.request({ method: 'eth_chainId', params: [] })
+      expect(response2).toEqual('0x1f')
+    })
+
+    it('is correct with sendAsync', () => {
+      provider.sendAsync({ method: 'net_version' }, (_err: Error, success: number) =>
+        expect(success).toEqual({ result: 31 })
+      )
+    })
   })
 
   describe('personal_sign', () => {
