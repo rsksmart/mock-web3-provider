@@ -13,19 +13,18 @@ const provider = (
   const buildProvider = {
     isMetaMask: true,
     networkVersion,
-    chainId: `0x${((0xFF + networkVersion + 1) & 0x0FF).toString(16)}`,
+    chainId: `0x${networkVersion.toString(16)}`,
     selectedAddress,
 
-    // eslint-disable-next-line no-unused-vars
-    request(props: any, _cb: any) {
+    request(props: { method: any; params: string[] }) {
       log(`request[${props.method}]`)
       switch (props.method) {
         case 'eth_requestAccounts':
         case 'eth_accounts':
-          return true
         case 'net_version':
         case 'eth_chainId':
           return true
+
         case 'personal_sign': {
           const privKey = Buffer.from(privateKey, 'hex');
           const signed = personalSign(privKey, { data: props.params[0] })
@@ -59,7 +58,7 @@ const provider = (
     },
   }
 
-  if (debug) { log('Provider ', buildProvider) }
+  log('Mock Provider ', buildProvider)
   return buildProvider;
 }
 
