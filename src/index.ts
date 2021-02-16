@@ -1,5 +1,65 @@
-const world = 'world';
+import { personalSign } from 'eth-sig-util'
 
-const hello = (word: string = world): string => `Hello ${word}!`;
+const provider = (
+  selectedAddress: string,
+  privateKey: string,
+  networkVersion: number,
+  debug?: boolean
+) => {
+  /* Logging */
+  // eslint-disable-next-line no-console
+  const log = (...args: (any | null)[]) => debug && console.log('🦄', ...args)
 
-export default hello;
+  const buildProvider = {
+    isMetaMask: true,
+    networkVersion,
+    chainId: `0x${networkVersion.toString(16)}`,
+    selectedAddress,
+
+    request(props: { method: any; params: string[] }) {
+      log(`request[${props.method}]`)
+      switch (props.method) {
+        case 'eth_requestAccounts':
+        case 'eth_accounts':
+        case 'net_version':
+        case 'eth_chainId':
+          return true
+
+        case 'personal_sign': {
+          const privKey = Buffer.from(privateKey, 'hex');
+          const signed = personalSign(privKey, { data: props.params[0] })
+          log('signed', signed)
+          return Promise.resolve(signed)
+        }
+        case 'eth_sendTransaction': {
+          return Promise.reject(new Error('This service can not send transactions.'))
+        }
+        default:
+          log(`resquesting missing method ${props.method}`)
+          return null
+      }
+    },
+
+    sendAsync(props: any, cb: any) {
+      switch (props.method) {
+        case 'eth_accounts':
+          cb(null, { result: [this.selectedAddress] })
+          break;
+        case 'net_version': cb(null, { result: [this.networkVersion] })
+          break;
+        default: log(`Method '${props.method}' is not supported yet.`)
+      }
+    },
+    on(props: string) {
+      log('registering event:', props)
+    },
+    removeAllListeners() {
+      log('removeAllListeners', null)
+    },
+  }
+
+  log('Mock Provider ', buildProvider)
+  return buildProvider;
+}
+
+export default provider
