@@ -1,19 +1,9 @@
 orbs:
-  node: circleci/node@4.0.1
+  node: circleci/node@4.0.0
 
 version: 2.1
 
-jobs:
-  test:
-    steps:
-      - checkout
-      - yarn install
-      - yarn test:ci
-      - yarn lint
-
-# Orchestrate our job run sequence
 workflows:
-  build_and_test:
+  app-tests:
     jobs:
-      - build
-      - test
+      - node/test
