@@ -40,12 +40,12 @@ const provider = (
       }
     },
 
-    sendAsync(props: any, cb: any) {
+    sendAsync(props: { method: string }, cb: any) {
       switch (props.method) {
         case 'eth_accounts':
           cb(null, { result: [this.selectedAddress] })
           break;
-        case 'net_version': cb(null, { result: [this.networkVersion] })
+        case 'net_version': cb(null, { result: this.networkVersion })
           break;
         default: log(`Method '${props.method}' is not supported yet.`)
       }
