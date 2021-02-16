@@ -1,23 +1,19 @@
-jobs:
-  test-lint:
-    executor:
-      name: node/default
-    steps:
-      - checkout
-      - node/install-packages
-      - run:
-          name: 'Test'
-          command: npx jest --coverage --ci
-      - run:
-          name: 'Lint'
-          command: yarn lint
-
 orbs:
   node: circleci/node@4.0.1
 
 version: 2.1
 
+jobs:
+  test:
+    steps:
+      - checkout
+      - yarn install
+      - yarn test:ci
+      - yarn lint
+
+# Orchestrate our job run sequence
 workflows:
-  test-lint:
+  build_and_test:
     jobs:
-      - test-lint
+      - build
+      - test
