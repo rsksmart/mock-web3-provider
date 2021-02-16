@@ -1,7 +1,8 @@
 {
     "env": {
         "browser": true,
-        "es2021": true
+        "es2021": true,
+        "jest": true
     },
     "extends": [
         "airbnb-base"
@@ -17,6 +18,17 @@
     ],
     "rules": {
         "semi": "off",
-        "comma-dangle": "off"
-    }
+        "comma-dangle": "off",
+        "radix": "off",
+        "import/extensions": ["error", "always", {
+            "ts": "never"
+        }]
+    },
+    "settings": {
+        "import/resolver": {
+            "node": {
+                "extensions": [".js", ".jsx", ".ts", ".tsx"]
+            }
+        }
+} 
 }
