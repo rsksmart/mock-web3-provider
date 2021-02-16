@@ -1,0 +1,28 @@
+jobs:
+  test-lint:
+    executor:
+      name: node/default
+    steps:
+      - checkout
+      - node/install-packages
+      - run:
+          name: 'Test'
+          command: npx jest --coverage --ci
+      - run:
+          name: 'Lint'
+          command: yarn lint
+      - codecov/upload:
+          file: ./coverage/coverage-final.json
+      - store_artifacts:
+          path: ./dist/
+
+orbs:
+  node: circleci/node@4.0.1
+  codecov: codecov/codecov@1.0.2
+
+version: 2.1
+
+workflows:
+  test-lint:
+    jobs:
+      - test-lint
