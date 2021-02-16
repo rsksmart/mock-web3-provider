@@ -17,13 +17,13 @@ const provider = (
     selectedAddress,
 
     request(props: { method: any; params: string[] }) {
-      log(`request[${props.method}]`)
+      log(`request!![${props.method}]`)
       switch (props.method) {
         case 'eth_requestAccounts':
         case 'eth_accounts':
         case 'net_version':
         case 'eth_chainId':
-          return true
+          return Promise.resolve(true)
 
         case 'personal_sign': {
           const privKey = Buffer.from(privateKey, 'hex');
@@ -36,7 +36,7 @@ const provider = (
         }
         default:
           log(`resquesting missing method ${props.method}`)
-          return null
+          return Promise.reject('Missing Method')
       }
     },
 
