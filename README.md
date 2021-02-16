@@ -12,14 +12,15 @@ import mockProvider from 'mock-web3-provider'
 describe('test interaction with web3', () => {
   beforeEach(() => {
     cy.on("window:before:load", (win) => {
-      win.ethereum = currentProvider(
-        address,
-        'de926db3012af759b4f24b5a51ef6afa397f04670f634aa4f48d4480417007f3',
-        31,
-        true
-      )
+      win.ethereum = mockProvider({ address, privateKey, chainId: 31, debug:false })
+
+      // when used with rLogin:
+      cy.visit('/')
+      cy.contains('Connect with rLogin').click()
+      cy.contains('MetaMask').click()
     })
   })
-  // ...
+
+  // your e2e tests...
 })
 ```

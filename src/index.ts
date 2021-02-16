@@ -1,29 +1,35 @@
 import { personalSign } from 'eth-sig-util'
 
-const provider = (
-  selectedAddress: string,
+interface ProviderSetup {
+  address: string,
   privateKey: string,
-  networkVersion: number,
+  chainId: number,
   debug?: boolean
-) => {
+}
+
+const provider = (props: ProviderSetup) => {
+  const { address, privateKey, chainId, debug } = props
+  
   /* Logging */
   // eslint-disable-next-line no-console
   const log = (...args: (any | null)[]) => debug && console.log('🦄', ...args)
 
   const buildProvider = {
     isMetaMask: true,
-    networkVersion,
-    chainId: `0x${networkVersion.toString(16)}`,
-    selectedAddress,
+    networkVersion: chainId,
+    chainId: `0x${chainId.toString(16)}`,
+    selectedAddress: address,
 
     request(props: { method: any; params: string[] }) {
       log(`request[${props.method}]`)
       switch (props.method) {
         case 'eth_requestAccounts':
         case 'eth_accounts':
+          return Promise.resolve([this.selectedAddress])
         case 'net_version':
+          return Promise.resolve(this.networkVersion)
         case 'eth_chainId':
-          return true
+          return Promise.resolve(this.chainId)
 
         case 'personal_sign': {
           const privKey = Buffer.from(privateKey, 'hex');
@@ -36,16 +42,16 @@ const provider = (
         }
         default:
           log(`resquesting missing method ${props.method}`)
-          return null
+          return Promise.reject('Missing Method')
       }
     },
 
-    sendAsync(props: any, cb: any) {
+    sendAsync(props: { method: string }, cb: any) {
       switch (props.method) {
         case 'eth_accounts':
           cb(null, { result: [this.selectedAddress] })
           break;
-        case 'net_version': cb(null, { result: [this.networkVersion] })
+        case 'net_version': cb(null, { result: this.networkVersion })
           break;
         default: log(`Method '${props.method}' is not supported yet.`)
       }
