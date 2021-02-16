@@ -1,20 +1,24 @@
 import { personalSign } from 'eth-sig-util'
 
-const provider = (
-  selectedAddress: string,
+interface ProviderSetup {
+  address: string,
   privateKey: string,
-  networkVersion: number,
+  chainId: number,
   debug?: boolean
-) => {
+}
+
+const provider = (props: ProviderSetup) => {
+  const { address, privateKey, chainId, debug } = props
+  
   /* Logging */
   // eslint-disable-next-line no-console
   const log = (...args: (any | null)[]) => debug && console.log('🦄', ...args)
 
   const buildProvider = {
     isMetaMask: true,
-    networkVersion,
-    chainId: `0x${networkVersion.toString(16)}`,
-    selectedAddress,
+    networkVersion: chainId,
+    chainId: `0x${chainId.toString(16)}`,
+    selectedAddress: address,
 
     request(props: { method: any; params: string[] }) {
       log(`request[${props.method}]`)
