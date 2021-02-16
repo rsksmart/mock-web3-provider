@@ -6,9 +6,14 @@
   "author": "Jesse Clark <hello@developerjesse.com>",
   "license": "MIT",
   "private": false,
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "npx tsc --outDir ./dist",
-    "build:watch": "npx tsc -w --outDir ./dist"
+    "build:watch": "npx tsc -w --outDir ./dist",
+    "lint": "npx eslint ./src/*.ts",
+    "prepublish": "npm run build"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^4.15.1",
