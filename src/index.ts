@@ -7,9 +7,11 @@ interface ProviderSetup {
   debug?: boolean
 }
 
-const provider = (props: ProviderSetup) => {
-  const { address, privateKey, chainId, debug } = props
-  
+const provider = (startProps: ProviderSetup) => {
+  const {
+    address, privateKey, chainId, debug
+  } = startProps
+
   /* Logging */
   // eslint-disable-next-line no-console
   const log = (...args: (any | null)[]) => debug && console.log('🦄', ...args)
@@ -42,6 +44,7 @@ const provider = (props: ProviderSetup) => {
         }
         default:
           log(`resquesting missing method ${props.method}`)
+          // eslint-disable-next-line prefer-promise-reject-errors
           return Promise.reject('Missing Method')
       }
     },
