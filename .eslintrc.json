@@ -15,6 +15,7 @@
         "@typescript-eslint"
     ],
     "rules": {
-        "semi": "off"
+        "semi": "off",
+        "comma-dangle": "off"
     }
 }

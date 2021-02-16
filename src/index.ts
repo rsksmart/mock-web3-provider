@@ -1,18 +1,25 @@
 import { personalSign } from 'eth-sig-util'
 
-const provider = (selectedAddress, privateKey, networkVersion, debug = false) => {
+const provider = (
+  selectedAddress: string,
+  privateKey: string,
+  networkVersion: number,
+  debug?: boolean
+) => {
   /* Logging */
-  const log = (...args) => debug && console.log('🦄', ...args)
+  // eslint-disable-next-line no-console
+  const log = (...args: (any | null)[]) => debug && console.log('🦄', ...args)
 
-  const provider = {
+  const buildProvider = {
     isMetaMask: true,
     networkVersion,
-    chainId: `0x${((0xFF + networkVersion +1) & 0x0FF).toString(16)}`,
+    chainId: `0x${((0xFF + networkVersion + 1) & 0x0FF).toString(16)}`,
     selectedAddress,
 
-    request: function(props, cb) {
+    // eslint-disable-next-line no-unused-vars
+    request(props: any, _cb: any) {
       log(`request[${props.method}]`)
-      switch(props.method) {
+      switch (props.method) {
         case 'eth_requestAccounts':
         case 'eth_accounts':
           return true
@@ -28,30 +35,32 @@ const provider = (selectedAddress, privateKey, networkVersion, debug = false) =>
         case 'eth_sendTransaction': {
           return Promise.reject(new Error('This service can not send transactions.'))
         }
-        default: log(`resquesting missing method ${props.method}`)
+        default:
+          log(`resquesting missing method ${props.method}`)
+          return null
       }
     },
 
-    sendAsync: function(props, cb) {
-      switch(props.method) {
+    sendAsync(props: any, cb: any) {
+      switch (props.method) {
         case 'eth_accounts':
-          cb(null, { result: [ this.selectedAddress ] })
+          cb(null, { result: [this.selectedAddress] })
           break;
-        case 'net_version': cb(null, { result: [ this.networkVersion ]})
+        case 'net_version': cb(null, { result: [this.networkVersion] })
           break;
         default: log(`Method '${props.method}' is not supported yet.`)
       }
     },
-    on: function(props) {
+    on(props: string) {
       log('registering event:', props)
     },
-    removeAllListeners: function() {
+    removeAllListeners() {
       log('removeAllListeners', null)
-    }
+    },
   }
 
-  debug && log('Provider ', provider)
-  return provider;
+  if (debug) { log('Provider ', buildProvider) }
+  return buildProvider;
 }
 
 export default provider
