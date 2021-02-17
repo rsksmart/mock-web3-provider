@@ -1,4 +1,4 @@
-import { personalSign } from 'eth-sig-util'
+import { personalSign, decrypt } from 'eth-sig-util'
 
 interface ProviderSetup {
   address: string,
@@ -42,10 +42,17 @@ const provider = (startProps: ProviderSetup) => {
         case 'eth_sendTransaction': {
           return Promise.reject(new Error('This service can not send transactions.'))
         }
+        case 'eth_decrypt': {
+          log('eth_decrypt', props)
+          const stripped = props.params[0].substring(2)
+          const buff = Buffer.from(stripped, 'hex');
+          const data = JSON.parse(buff.toString('utf8'));
+          return Promise.resolve(decrypt(data, privateKey))
+        }
         default:
           log(`resquesting missing method ${props.method}`)
           // eslint-disable-next-line prefer-promise-reject-errors
-          return Promise.reject('Missing Method')
+          return Promise.reject(`The method ${props.method} is not implemented by the mock provider.`)
       }
     },
 
