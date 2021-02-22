@@ -23,7 +23,7 @@ Under development and missing many request methods and listeners. See below unde
 
 Setup the mock provider before the window loads and set it to the `win.ethereum` variable. For a complete integration example, see the [rLogin basic dapp test integration](https://github.com/rsksmart/rlogin-sample-apps/blob/main/basic-dapp/cypress/integration/injected_spec.js).
 
-```
+```js
 import mockProvider from 'mock-web3-provider'
 
 describe('test interaction with web3', () => {
