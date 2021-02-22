@@ -1,6 +1,21 @@
-# mock-web3-provider
-
-A mock web3 provider for Cypress built in Cyprus.
+<p align="middle">
+    <img src="https://www.rifos.org/assets/img/logo.svg" alt="logo" height="100" >
+</p>
+<h3 align="middle">mock-web3-provider</h3>
+<p align="middle">
+    A mock web3 provider for Cypress built in Cyprus.
+</p>
+<p align="middle">
+    <a href="https://circleci.com/gh/rsksmart/mock-web3-provider">
+        <img src="https://img.shields.io/circleci/build/github/rsksmart/mock-web3-provider?label=CircleCI" alt="npm" />
+    </a>
+    <a href="https://lgtm.com/projects/g/rsksmart/mock-web3-provider/alerts/">
+      <img src="https://img.shields.io/lgtm/alerts/github/rsksmart/mock-web3-provider" alt="alerts">
+    </a>
+    <a href="https://lgtm.com/projects/g/rsksmart/mock-web3-provider/context:javascript">
+      <img src="https://img.shields.io/lgtm/grade/javascript/github/rsksmart/mock-web3-provider">
+    </a>
+</p>
 
 Under development and missing many request methods and listeners. See below under 'contributing' to help!
 
