@@ -14,7 +14,7 @@
     "build:watch": "npx tsc -w --outDir ./dist",
     "lint": "npx eslint ./src/*.ts",
     "test": "npx jest",
-    "test:ci": "jest --coverage --ci",
+    "test:ci": "npx jest --verbose --coverage --watchAll=false --coverageDirectory reports --maxWorkers=2",
     "test:watch": "npx jest --watch",
     "prepublish": "npm run build"
   },
