@@ -15,6 +15,9 @@
     <a href="https://lgtm.com/projects/g/rsksmart/mock-web3-provider/context:javascript">
       <img src="https://img.shields.io/lgtm/grade/javascript/github/rsksmart/mock-web3-provider">
     </a>
+    <a href="https://www.npmjs.com/package/@rsksmart/mock-web3-provider">
+      <img src="https://img.shields.io/npm/v/@rsksmart/mock-web3-provider">
+    </a>
 </p>
 
 Under development and missing many request methods and listeners. See below under 'contributing' to help!
