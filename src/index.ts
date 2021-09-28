@@ -7,6 +7,18 @@ interface ProviderSetup {
   debug?: boolean
 }
 
+export type RequestProps = { method: any; params: any[] }
+export type MockFn = (props: RequestProps) => Promise<any>
+interface IMocks {
+  [key: string]: MockFn[]
+}
+
+export enum EMockMethod {
+  SendTransaction = "eth_sendTransaction",
+  GetBalance = "eth_getBalance",
+  Call = "eth_call"
+}
+
 const provider = (startProps: ProviderSetup) => {
   const {
     address, privateKey, chainId, debug
@@ -16,13 +28,29 @@ const provider = (startProps: ProviderSetup) => {
   // eslint-disable-next-line no-console
   const log = (...args: (any | null)[]) => debug && console.log('🦄', ...args)
 
+  const mockFunctions: IMocks = {
+    [EMockMethod.SendTransaction]: [],
+    [EMockMethod.GetBalance]: [],
+    [EMockMethod.Call]: []
+  }
+
   const buildProvider = {
     isMetaMask: true,
     networkVersion: chainId,
     chainId: `0x${chainId.toString(16)}`,
     selectedAddress: address,
 
-    request(props: { method: any; params: string[] }) {
+    addMock (key: EMockMethod, fn: MockFn) {
+      mockFunctions[key].push(fn)
+    },
+
+    clearMocks () {
+      mockFunctions[EMockMethod.Call] = []
+      mockFunctions[EMockMethod.GetBalance] = []
+      mockFunctions[EMockMethod.SendTransaction] = []
+    },
+
+    async request(props: RequestProps) {
       log(`request[${props.method}]`)
       switch (props.method) {
         case 'eth_requestAccounts':
@@ -39,15 +67,27 @@ const provider = (startProps: ProviderSetup) => {
           log('signed', signed)
           return Promise.resolve(signed)
         }
-        case 'eth_sendTransaction': {
-          return Promise.reject(new Error('This service can not send transactions.'))
-        }
         case 'eth_decrypt': {
           log('eth_decrypt', props)
           const stripped = props.params[0].substring(2)
           const buff = Buffer.from(stripped, 'hex');
           const data = JSON.parse(buff.toString('utf8'));
           return Promise.resolve(decrypt(data, privateKey))
+        }
+        case 'eth_getBalance':
+        case 'eth_call':
+        case 'eth_sendTransaction': {
+          const method = props.method as EMockMethod
+          const mocks = mockFunctions[method]
+          for (const mock of mocks) {
+            const result = await mock(props)
+
+            if (result) {
+              return result
+            }
+          }
+
+          return Promise.reject(new Error(`Could not find a mock for ${props.method}.`))
         }
         default:
           log(`resquesting missing method ${props.method}`)

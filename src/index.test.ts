@@ -1,4 +1,4 @@
-import mockProvider from './index'
+import mockProvider, { EMockMethod } from './index'
 
 describe('provider', () => {
   const address = '0xB98bD7C7f656290071E52D1aA617D9cB4467Fd6D'
@@ -67,6 +67,73 @@ describe('provider', () => {
       const encrypted = '0x7b2276657273696f6e223a227832353531392d7873616c736132302d706f6c7931333035222c226e6f6e6365223a224a5647674e476b3149677957577253546b4448784145347a4e7341313967612f222c22657068656d5075626c69634b6579223a22567973642b7445517a6e6f557459614e485554696a4c614d6f386a767332656f4e43636675556a512f41633d222c2263697068657274657874223a227166306e6450374c5569416276704e4f5945764b3331783953445971227d'
       const result = await provider.request({ method: 'eth_decrypt', params: [encrypted, address] })
       expect(result).toEqual('tacos')
+    })
+  })
+
+  describe('eth_getBalance', () => {
+    beforeEach(() => {
+      provider.clearMocks()
+    })
+
+    it('get mocked balance', async () => {
+      const account = '0xb98bd7c7f656290071e52d1aa617d9cb4467fd6d'
+
+      provider.addMock(EMockMethod.GetBalance, (props) => {
+        if (props.params[0] === account) {
+          const rbtcWeiBalance = '55d7c12a26c690000' // 98,97 in hexadecimal
+          return Promise.resolve(`0x${rbtcWeiBalance}`)
+        }
+
+        return Promise.resolve(null)
+      })
+
+      const result = await provider.request({ method: 'eth_getBalance', params: [account, 'latest'] })
+      expect(result).toEqual('0x55d7c12a26c690000')
+    })
+
+    it('get other mocked balance', async () => {
+      const account = '0xb98bd7c7f656290071e52d1aa617d9cb4467fd6d'
+
+      provider.addMock(EMockMethod.GetBalance, (props) => {
+        if (props.params[0] === account) {
+          const rbtcWeiBalance = 'b3feb24830d10000' // 12,97 in hexadecimal
+          return Promise.resolve(`0x${rbtcWeiBalance}`)
+        }
+
+        return Promise.resolve(null)
+      })
+
+      const result = await provider.request({ method: 'eth_getBalance', params: [account, 'latest'] })
+      expect(result).toEqual('0xb3feb24830d10000')
+    })
+  })
+
+  describe('eth_call', () => {
+    beforeEach(() => {
+      provider.clearMocks()
+    })
+
+    it('get mocked call result', async () => {
+      const from = '0xb98bd7c7f656290071e52d1aa617d9cb4467fd6d'
+      const to = '0xc3de9f38581f83e281f260d0ddbaac0e102ff9f8'
+
+      provider.addMock(EMockMethod.Call, (props) => {
+        if (props.params[0].from === from && props.params[0].to === to) {
+          return Promise.resolve('0x00000000000000000000000000000000000000000000000557eefcc0f6410000')
+        }
+
+        return Promise.resolve(null)
+      })
+
+      const result = await provider.request({
+        method: 'eth_call',
+        params: [{
+          data: '0x70a08231000000000000000000000000b98bd7c7f656290071e52d1aa617d9cb4467fd6d',
+          from,
+          to
+        }, 'latest']
+      })
+      expect(result).toEqual('0x00000000000000000000000000000000000000000000000557eefcc0f6410000')
     })
   })
 })
