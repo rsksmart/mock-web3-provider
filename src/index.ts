@@ -8,15 +8,20 @@ interface ProviderSetup {
 }
 
 export type RequestProps = { method: any; params: any[] }
+// eslint-disable-next-line no-unused-vars
 export type MockFn = (props: RequestProps) => Promise<any>
 interface IMocks {
   [key: string]: MockFn[]
 }
 
+// eslint-disable-next-line no-shadow
 export enum EMockMethod {
-  SendTransaction = "eth_sendTransaction",
-  GetBalance = "eth_getBalance",
-  Call = "eth_call"
+  // eslint-disable-next-line no-unused-vars
+  SendTransaction = 'eth_sendTransaction',
+  // eslint-disable-next-line no-unused-vars
+  GetBalance = 'eth_getBalance',
+  // eslint-disable-next-line no-unused-vars
+  Call = 'eth_call'
 }
 
 const provider = (startProps: ProviderSetup) => {
@@ -40,11 +45,11 @@ const provider = (startProps: ProviderSetup) => {
     chainId: `0x${chainId.toString(16)}`,
     selectedAddress: address,
 
-    addMock (key: EMockMethod, fn: MockFn) {
+    addMock(key: EMockMethod, fn: MockFn) {
       mockFunctions[key].push(fn)
     },
 
-    clearMocks () {
+    clearMocks() {
       mockFunctions[EMockMethod.Call] = []
       mockFunctions[EMockMethod.GetBalance] = []
       mockFunctions[EMockMethod.SendTransaction] = []
@@ -79,7 +84,10 @@ const provider = (startProps: ProviderSetup) => {
         case 'eth_sendTransaction': {
           const method = props.method as EMockMethod
           const mocks = mockFunctions[method]
+
+          // eslint-disable-next-line no-restricted-syntax
           for (const mock of mocks) {
+            // eslint-disable-next-line no-await-in-loop
             const result = await mock(props)
 
             if (result) {
