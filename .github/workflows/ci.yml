@@ -1,4 +1,4 @@
-name: ci
+name: Run Tests and Lint
 
 on:
   pull_request
