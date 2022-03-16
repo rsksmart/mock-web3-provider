@@ -1,15 +1,31 @@
 import { personalSign, decrypt } from 'eth-sig-util'
 
-interface ProviderSetup {
-  address: string,
-  privateKey: string,
-  networkVersion: number,
+type ProviderSetup = {
+  address: string
+  privateKey: string
+  networkVersion: number
   debug?: boolean
   manualConfirmEnable?: boolean
 }
 
-export class MockProvider {
-  setup: ProviderSetup
+interface IMockProvider {
+  request(args: { method: 'eth_accounts'; params: string[] }): Promise<string[]>
+  request(args: { method: 'eth_requestAccounts'; params: string[] }): Promise<string[]>
+
+  request(args: { method: 'net_version' }): Promise<number>
+  request(args: { method: 'eth_chainId'; params: string[] }): Promise<string>
+
+  request(args: { method: 'personal_sign'; params: string[] }): Promise<string>
+  request(args: { method: 'eth_decrypt'; params: string[] }): Promise<string>
+
+  request(args: { method: string, params?: any[] }): Promise<any>
+}
+
+export class MockProvider implements IMockProvider {
+  private setup: ProviderSetup
+
+  private acceptEnable?: (value: unknown) => void
+  private rejectEnable?: (value: unknown) => void
 
   constructor(setup: ProviderSetup) {
     this.setup = setup
@@ -17,25 +33,37 @@ export class MockProvider {
 
   private log = (...args: (any | null)[]) => this.setup.debug && console.log('🦄', ...args)
 
-  get selectedAddress() {
+  get selectedAddress(): string {
     return this.setup.address
   }
 
-  get networkVersion() {
+  get networkVersion(): number {
     return this.setup.networkVersion
   }
 
-  get chainId() {
+  get chainId(): string {
     return `0x${this.setup.networkVersion.toString(16)}`
   }
 
-  request(props: { method: any; params: string[] }) {
-    this.log(`request[${props.method}]`)
+  answerEnable(acceptance: boolean) {
+    if (acceptance) this.acceptEnable!('Accepted')
+    else this.rejectEnable!('User rejected')
+  }
 
-    switch (props.method) {
+  request({ method, params }: any): Promise<any> {
+    this.log(`request[${method}]`)
+
+    switch (method) {
       case 'eth_requestAccounts':
       case 'eth_accounts':
-        return Promise.resolve([this.setup.address])
+        if (this.setup.manualConfirmEnable) {
+          return new Promise((resolve, reject) => {
+            this.acceptEnable = resolve
+            this.rejectEnable = reject
+          }).then(() => [this.selectedAddress])
+        } else {
+          return Promise.resolve([this.selectedAddress])
+        }
 
       case 'net_version':
         return Promise.resolve(this.setup.networkVersion)
@@ -45,7 +73,8 @@ export class MockProvider {
 
       case 'personal_sign': {
         const privKey = Buffer.from(this.setup.privateKey, 'hex');
-        const signed = personalSign(privKey, { data: props.params[0] })
+
+        const signed: string = personalSign(privKey, { data: params[0] })
 
         this.log('signed', signed)
 
@@ -57,19 +86,21 @@ export class MockProvider {
       }
 
       case 'eth_decrypt': {
-        this.log('eth_decrypt', props)
+        this.log('eth_decrypt', { method, params })
 
-        const stripped = props.params[0].substring(2)
+        const stripped = params[0].substring(2)
         const buff = Buffer.from(stripped, 'hex');
         const data = JSON.parse(buff.toString('utf8'));
 
-        return Promise.resolve(decrypt(data, this.setup.privateKey))
+        const decrypted: string = decrypt(data, this.setup.privateKey)
+
+        return Promise.resolve(decrypted)
       }
 
       default:
-        this.log(`resquesting missing method ${props.method}`)
+        this.log(`resquesting missing method ${method}`)
         // eslint-disable-next-line prefer-promise-reject-errors
-        return Promise.reject(`The method ${props.method} is not implemented by the mock provider.`)
+        return Promise.reject(`The method ${method} is not implemented by the mock provider.`)
     }
   }
 

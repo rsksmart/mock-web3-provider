@@ -1,6 +1,6 @@
 import { MockProvider } from './index'
 
-describe('provider', () => {
+describe('default provider', () => {
   const address = '0xB98bD7C7f656290071E52D1aA617D9cB4467Fd6D'
   const privateKey = 'de926db3012af759b4f24b5a51ef6afa397f04670f634aa4f48d4480417007f3'
 
@@ -69,4 +69,45 @@ describe('provider', () => {
       expect(result).toEqual('tacos')
     })
   })
+})
+
+describe('provider with confirm enable', () => {
+  const address = '0xB98bD7C7f656290071E52D1aA617D9cB4467Fd6D'
+  const privateKey = 'de926db3012af759b4f24b5a51ef6afa397f04670f634aa4f48d4480417007f3'
+
+  const provider = new MockProvider({
+    address, privateKey, networkVersion: 31, debug: false, manualConfirmEnable: true
+  })
+
+  it('should not allow to use acceptEnable without pending request', () => {
+    expect(() => provider.answerEnable(true)).toThrow()
+    expect(() => provider.answerEnable(false)).toThrow()
+  })
+
+  it('resolves with acceptance', async () => {
+    expect.assertions(1)
+
+    const responsePromise = provider.request({ method: 'eth_requestAccounts', params: [] })
+      .then((accounts: any) => expect(accounts[0]).toEqual(address))
+
+    provider.answerEnable(true)
+    await responsePromise
+  })
+
+  it('rejects with denial', async () => {
+    expect.assertions(1)
+
+    const responsePromise = provider.request({ method: 'eth_requestAccounts', params: [] })
+      .catch(e => expect(e).toBeDefined())
+
+    provider.answerEnable(false)
+    await responsePromise
+  })
+
+  /*
+  it('does not resolver request accounts if no answer', async () => {
+    // see that this timeouts
+    await provider.request({ method: 'eth_requestAccounts', params: [] })
+  })
+  */
 })
