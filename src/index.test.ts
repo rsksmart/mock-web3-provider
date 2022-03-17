@@ -98,7 +98,7 @@ describe('provider with confirm enable', () => {
     expect.assertions(1)
 
     const responsePromise = provider.request({ method: 'eth_requestAccounts', params: [] })
-      .catch(e => expect(e).toBeDefined())
+      .catch((e) => expect(e).toBeDefined())
 
     provider.answerEnable(false)
     await responsePromise

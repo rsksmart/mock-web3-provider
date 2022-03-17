@@ -21,16 +21,19 @@ interface IMockProvider {
   request(args: { method: string, params?: any[] }): Promise<any>
 }
 
+// eslint-disable-next-line import/prefer-default-export
 export class MockProvider implements IMockProvider {
   private setup: ProviderSetup
 
   private acceptEnable?: (value: unknown) => void
+
   private rejectEnable?: (value: unknown) => void
 
   constructor(setup: ProviderSetup) {
     this.setup = setup
   }
 
+  // eslint-disable-next-line no-console
   private log = (...args: (any | null)[]) => this.setup.debug && console.log('🦄', ...args)
 
   get selectedAddress(): string {
@@ -61,9 +64,8 @@ export class MockProvider implements IMockProvider {
             this.acceptEnable = resolve
             this.rejectEnable = reject
           }).then(() => [this.selectedAddress])
-        } else {
-          return Promise.resolve([this.selectedAddress])
         }
+        return Promise.resolve([this.selectedAddress])
 
       case 'net_version':
         return Promise.resolve(this.setup.networkVersion)

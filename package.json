@@ -13,6 +13,7 @@
     "build": "npx tsc --outDir ./dist",
     "build:watch": "npx tsc -w --outDir ./dist",
     "lint": "npx eslint ./src/*.ts",
+    "lint:fix": "npx eslint ./src/*.ts --fix",
     "test": "npx jest",
     "test:ci": "npx jest --verbose --coverage --watchAll=false --coverageDirectory reports --maxWorkers=2",
     "test:watch": "npx jest --watch",
