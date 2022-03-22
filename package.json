@@ -1,6 +1,6 @@
 {
   "name": "@rsksmart/mock-web3-provider",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "main": "dist/index.js",
   "repository": "git@github.com:jessgusclark/mock-web3-provider.git",
   "author": "Jesse Clark <hello@developerjesse.com>",
@@ -13,6 +13,7 @@
     "build": "npx tsc --outDir ./dist",
     "build:watch": "npx tsc -w --outDir ./dist",
     "lint": "npx eslint ./src/*.ts",
+    "lint:fix": "npx eslint ./src/*.ts --fix",
     "test": "npx jest",
     "test:ci": "npx jest --verbose --coverage --watchAll=false --coverageDirectory reports --maxWorkers=2",
     "test:watch": "npx jest --watch",
