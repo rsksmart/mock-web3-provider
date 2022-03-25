@@ -24,6 +24,7 @@ interface IMockProvider {
 // eslint-disable-next-line import/prefer-default-export
 export class MockProvider implements IMockProvider {
   private setup: ProviderSetup
+  public isMetaMask = true
 
   private acceptEnable?: (value: unknown) => void
 
