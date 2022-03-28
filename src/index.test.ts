@@ -1,6 +1,6 @@
 import { MockProvider } from './index'
 
-describe('default provider', function (this: {
+describe('default provider', function test(this: {
   provider: MockProvider
 }) {
   const address = '0xB98bD7C7f656290071E52D1aA617D9cB4467Fd6D'
@@ -21,11 +21,10 @@ describe('default provider', function (this: {
       expect(this.provider.isMetaMask).toBeTruthy()
     })
 
-    it('can set that is not metamask', () => {{
+    it('can set that is not metamask', () => {
       this.provider.isMetaMask = false
       expect(this.provider.isMetaMask).toBeFalsy()
-    }})
-
+    })
 
     it('can set that is another provider', () => {
       (this.provider as any).isLedger = true
@@ -101,7 +100,7 @@ describe('default provider', function (this: {
   })
 })
 
-describe('provider with confirm enable', function (this: {
+describe('provider with confirm enable', function test(this: {
   provider: MockProvider
 }) {
   const address = '0xB98bD7C7f656290071E52D1aA617D9cB4467Fd6D'
