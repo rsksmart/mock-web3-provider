@@ -34,7 +34,7 @@ describe('default provider', function test(this: {
   })
 
   describe('overwrites', () => {
-    test('can overwrite request to make it fail', async () => {
+    it('can overwrite request to make it fail', async () => {
       this.provider.request = () => Promise.reject(new Error('Fail'))
 
       await expect(this.provider.request({ method: 'any' })).rejects.toThrow()
