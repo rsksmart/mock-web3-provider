@@ -25,6 +25,8 @@ interface IMockProvider {
 export class MockProvider implements IMockProvider {
   private setup: ProviderSetup
 
+  public isMetaMask = true
+
   private acceptEnable?: (value: unknown) => void
 
   private rejectEnable?: (value: unknown) => void
