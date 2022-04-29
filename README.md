@@ -32,7 +32,7 @@ import { MockProvider } from './index'
 describe('test interaction with web3', () => {
   beforeEach(() => {
     cy.on("window:before:load", (win) => {
-      win.ethereum = new MockProvider({ address, privateKey, chainId: 31, debug:false })
+      win.ethereum = new MockProvider({ address, privateKey, networkVersion: 31, debug:false })
 
       // when used with rLogin:
       cy.visit('/')
