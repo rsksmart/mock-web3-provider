@@ -75,9 +75,10 @@ export class MockProvider implements IMockProvider {
         }
         return Promise.resolve([this.selectedAddress])
 
-      case 'wallet_requestPermissions':
-        if (!params[0].eth_accounts)
-          return Promise.reject(`The method "${Object.keys(params[0])[0]}" does not exist / is not available`)
+      case 'wallet_requestPermissions': {
+        if (!params[0]) return Promise.reject(new Error('Invalid method parameter(s).'))
+
+        if (!params[0].eth_accounts) return Promise.reject(new Error(`The method "${Object.keys(params[0])[0]}" does not exist / is not available.`))
 
         const permissions: Web3WalletPermission[] = [{ parentCapability: 'eth_accounts', date: Date.now() }]
 
@@ -88,6 +89,7 @@ export class MockProvider implements IMockProvider {
           }).then(() => permissions)
         }
         return Promise.resolve(permissions)
+      }
 
       case 'net_version':
         return Promise.resolve(this.setup.networkVersion)
