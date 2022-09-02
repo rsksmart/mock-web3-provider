@@ -1,6 +1,6 @@
 {
   "name": "@rsksmart/mock-web3-provider",
-  "version": "1.0.1",
+  "version": "1.0.2-beta1",
   "main": "dist/index.js",
   "repository": "git@github.com:jessgusclark/mock-web3-provider.git",
   "author": "Jesse Clark <hello@developerjesse.com>",
