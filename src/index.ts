@@ -1,4 +1,4 @@
-import { personalSign, decrypt } from 'eth-sig-util'
+import { personalSign, decrypt } from '@metamask/eth-sig-util'
 
 type ProviderSetup = {
   address: string
@@ -76,9 +76,9 @@ export class MockProvider implements IMockProvider {
         return Promise.resolve(this.chainId)
 
       case 'personal_sign': {
-        const privKey = Buffer.from(this.setup.privateKey, 'hex');
+        const privateKey = Buffer.from(this.setup.privateKey, 'hex');
 
-        const signed: string = personalSign(privKey, { data: params[0] })
+        const signed: string = personalSign({ privateKey, data: params[0] })
 
         this.log('signed', signed)
 
@@ -94,9 +94,9 @@ export class MockProvider implements IMockProvider {
 
         const stripped = params[0].substring(2)
         const buff = Buffer.from(stripped, 'hex');
-        const data = JSON.parse(buff.toString('utf8'));
+        const encryptedData = JSON.parse(buff.toString('utf8'));
 
-        const decrypted: string = decrypt(data, this.setup.privateKey)
+        const decrypted: string = decrypt({ encryptedData, privateKey: this.setup.privateKey })
 
         return Promise.resolve(decrypted)
       }

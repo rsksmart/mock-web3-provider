@@ -32,6 +32,6 @@
     "typescript": "^4.1.5"
   },
   "dependencies": {
-    "eth-sig-util": "^3.0.1"
+    "@metamask/eth-sig-util": "^4.0.1"
   }
 }
