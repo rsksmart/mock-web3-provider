@@ -102,7 +102,7 @@ export class MockProvider implements IMockProvider {
       }
 
       default:
-        this.log(`resquesting missing method ${method}`)
+        this.log(`requesting missing method ${method}`)
         // eslint-disable-next-line prefer-promise-reject-errors
         return Promise.reject(`The method ${method} is not implemented by the mock provider.`)
     }
