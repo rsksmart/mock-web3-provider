@@ -1,5 +1,5 @@
-import { personalSign, decrypt } from "@metamask/eth-sig-util";
-import { BigNumber } from "@ethersproject/bignumber";
+import { personalSign, decrypt } from '@metamask/eth-sig-util';
+import { BigNumber } from '@ethersproject/bignumber';
 
 type ProviderSetup = {
   address: string;
@@ -11,19 +11,19 @@ type ProviderSetup = {
 
 interface IMockProvider {
   request(args: {
-    method: "eth_accounts";
+    method: 'eth_accounts';
     params: string[];
   }): Promise<string[]>;
   request(args: {
-    method: "eth_requestAccounts";
+    method: 'eth_requestAccounts';
     params: string[];
   }): Promise<string[]>;
 
-  request(args: { method: "net_version" }): Promise<number>;
-  request(args: { method: "eth_chainId"; params: string[] }): Promise<string>;
+  request(args: { method: 'net_version' }): Promise<number>;
+  request(args: { method: 'eth_chainId'; params: string[] }): Promise<string>;
 
-  request(args: { method: "personal_sign"; params: string[] }): Promise<string>;
-  request(args: { method: "eth_decrypt"; params: string[] }): Promise<string>;
+  request(args: { method: 'personal_sign'; params: string[] }): Promise<string>;
+  request(args: { method: 'eth_decrypt'; params: string[] }): Promise<string>;
 
   request(args: { method: string; params?: any[] }): Promise<any>;
 }
@@ -46,8 +46,7 @@ export class MockProvider implements IMockProvider {
   }
 
   // eslint-disable-next-line no-console
-  private log = (...args: (any | null)[]) =>
-    this.setup.debug && console.log("🦄", ...args);
+  private log = (...args: (any | null)[]) => this.setup.debug && console.log('🦄', ...args);
 
   get selectedAddress(): string {
     return this.setup.address;
@@ -62,16 +61,16 @@ export class MockProvider implements IMockProvider {
   }
 
   answerEnable(acceptance: boolean) {
-    if (acceptance) this.acceptEnable!("Accepted");
-    else this.rejectEnable!("User rejected");
+    if (acceptance) this.acceptEnable!('Accepted');
+    else this.rejectEnable!('User rejected');
   }
 
   request({ method, params }: any): Promise<any> {
     this.log(`request[${method}]`);
 
     switch (method) {
-      case "eth_requestAccounts":
-      case "eth_accounts":
+      case 'eth_requestAccounts':
+      case 'eth_accounts':
         if (this.setup.manualConfirmEnable) {
           return new Promise((resolve, reject) => {
             this.acceptEnable = resolve;
@@ -80,37 +79,37 @@ export class MockProvider implements IMockProvider {
         }
         return Promise.resolve([this.selectedAddress]);
 
-      case "net_version":
+      case 'net_version':
         return Promise.resolve(this.setup.networkVersion);
 
-      case "eth_chainId":
+      case 'eth_chainId':
         return Promise.resolve(this.chainId);
-      case "eth_blockNumber":
+      case 'eth_blockNumber':
         return Promise.resolve(
           BigNumber.from(Math.round((Date.now() - GENISIS_BLOCK) / BLOCK_TIME))
         );
-      case "personal_sign": {
-        const privateKey = Buffer.from(this.setup.privateKey, "hex");
+      case 'personal_sign': {
+        const privateKey = Buffer.from(this.setup.privateKey, 'hex');
 
         const signed: string = personalSign({ privateKey, data: params[0] });
 
-        this.log("signed", signed);
+        this.log('signed', signed);
 
         return Promise.resolve(signed);
       }
 
-      case "eth_sendTransaction": {
+      case 'eth_sendTransaction': {
         return Promise.reject(
-          new Error("This service can not send transactions.")
+          new Error('This service can not send transactions.')
         );
       }
 
-      case "eth_decrypt": {
-        this.log("eth_decrypt", { method, params });
+      case 'eth_decrypt': {
+        this.log('eth_decrypt', { method, params });
 
         const stripped = params[0].substring(2);
-        const buff = Buffer.from(stripped, "hex");
-        const encryptedData = JSON.parse(buff.toString("utf8"));
+        const buff = Buffer.from(stripped, 'hex');
+        const encryptedData = JSON.parse(buff.toString('utf8'));
 
         const decrypted: string = decrypt({
           encryptedData,
@@ -131,11 +130,11 @@ export class MockProvider implements IMockProvider {
 
   sendAsync(props: { method: string }, cb: any) {
     switch (props.method) {
-      case "eth_accounts":
+      case 'eth_accounts':
         cb(null, { result: [this.setup.address] });
         break;
 
-      case "net_version":
+      case 'net_version':
         cb(null, { result: this.setup.networkVersion });
         break;
 
@@ -145,10 +144,10 @@ export class MockProvider implements IMockProvider {
   }
 
   on(props: string) {
-    this.log("registering event:", props);
+    this.log('registering event:', props);
   }
 
   removeAllListeners() {
-    this.log("removeAllListeners", null);
+    this.log('removeAllListeners', null);
   }
 }
