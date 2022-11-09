@@ -2,10 +2,10 @@ import MockDate from 'mockdate';
 import { BigNumber } from '@ethersproject/bignumber';
 import { MockProvider } from './index';
 
-describe('default provider', function test(this: { provider: MockProvider }) {
-  const address = '0xB98bD7C7f656290071E52D1aA617D9cB4467Fd6D';
-  const privateKey = 'de926db3012af759b4f24b5a51ef6afa397f04670f634aa4f48d4480417007f3';
+const address = '0xB98bD7C7f656290071E52D1aA617D9cB4467Fd6D';
+const privateKey = 'de926db3012af759b4f24b5a51ef6afa397f04670f634aa4f48d4480417007f3';
 
+describe('default provider', function test(this: { provider: MockProvider }) {
   beforeEach(() => {
     this.provider = new MockProvider({
       address,
@@ -135,9 +135,6 @@ describe('default provider', function test(this: { provider: MockProvider }) {
 describe('provider with confirm enable', function test(this: {
   provider: MockProvider;
 }) {
-  const address = '0xB98bD7C7f656290071E52D1aA617D9cB4467Fd6D';
-  const privateKey = 'de926db3012af759b4f24b5a51ef6afa397f04670f634aa4f48d4480417007f3';
-
   beforeEach(async () => {
     this.provider = new MockProvider({
       address,
@@ -184,9 +181,6 @@ describe('provider with confirm enable', function test(this: {
 });
 
 describe('provider with custom blocktimes', () => {
-  const address = '0xB98bD7C7f656290071E52D1aA617D9cB4467Fd6D';
-  const privateKey = 'de926db3012af759b4f24b5a51ef6afa397f04670f634aa4f48d4480417007f3';
-
   const provider = new MockProvider({
     address,
     privateKey,
