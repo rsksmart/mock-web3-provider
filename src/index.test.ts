@@ -99,17 +99,6 @@ describe('default provider', function test(this: { provider: MockProvider }) {
     });
   });
 
-  describe('eth_blockNumber', () => {
-    it('returns correctly', async () => {
-      MockDate.set(1665773724867);
-      const response = await this.provider.request({
-        method: 'eth_blockNumber',
-        params: [],
-      });
-      expect(response).toEqual(BigNumber.from(9015517));
-    });
-  });
-
   describe('personal_sign', () => {
     it('returns the correct signature for the message', async () => {
       const signed = await this.provider.request({
@@ -193,3 +182,28 @@ describe('provider with confirm enable', function test(this: {
   })
   */
 });
+
+describe('provider with custom blocktimes', () => {
+  const address = '0xB98bD7C7f656290071E52D1aA617D9cB4467Fd6D';
+  const privateKey = 'de926db3012af759b4f24b5a51ef6afa397f04670f634aa4f48d4480417007f3';
+
+  const provider = new MockProvider({
+    address,
+    privateKey,
+    networkVersion: 31,
+    debug: false,
+    blockTime: 14000,
+    genisisBlockTime: 1539556481000
+  });
+
+  describe('eth_blockNumber', () => {
+    it('returns correctly', async () => {
+      MockDate.set(1665773724867);
+      const response = await provider.request({
+        method: 'eth_blockNumber',
+        params: [],
+      });
+      expect(response).toEqual(BigNumber.from(9015517));
+    });
+  });
+})

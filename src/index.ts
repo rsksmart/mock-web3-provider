@@ -1,13 +1,6 @@
 import { personalSign, decrypt } from '@metamask/eth-sig-util';
 import { BigNumber } from '@ethersproject/bignumber';
-
-type ProviderSetup = {
-  address: string;
-  privateKey: string;
-  networkVersion: number;
-  debug?: boolean;
-  manualConfirmEnable?: boolean;
-};
+import { ProviderSetup, UserProvierSetup } from './types';
 
 interface IMockProvider {
   request(args: {
@@ -28,9 +21,6 @@ interface IMockProvider {
   request(args: { method: string; params?: any[] }): Promise<any>;
 }
 
-const BLOCK_TIME = 14000; // assume 14 second blocktime
-const GENISIS_BLOCK = 1539556481000; // Sun Oct 14 2018 22:34:41 GMT+0000
-
 // eslint-disable-next-line import/prefer-default-export
 export class MockProvider implements IMockProvider {
   private setup: ProviderSetup;
@@ -41,8 +31,14 @@ export class MockProvider implements IMockProvider {
 
   private rejectEnable?: (value: unknown) => void;
 
-  constructor(setup: ProviderSetup) {
-    this.setup = setup;
+  constructor(setup: UserProvierSetup) {
+    const setupDefaults = {
+      ...setup,
+      blockTime: setup.blockTime || 60000,
+      genisisBlockTime: setup.genisisBlockTime || 1515051683000 // 2018/01/04 09:41:23 +02:00
+    }
+
+    this.setup = setupDefaults
   }
 
   // eslint-disable-next-line no-console
@@ -86,7 +82,9 @@ export class MockProvider implements IMockProvider {
         return Promise.resolve(this.chainId);
       case 'eth_blockNumber':
         return Promise.resolve(
-          BigNumber.from(Math.round((Date.now() - GENISIS_BLOCK) / BLOCK_TIME))
+          BigNumber.from(Math.round(
+            (Date.now() - this.setup.genisisBlockTime) / this.setup.blockTime
+          ),),
         );
       case 'personal_sign': {
         const privateKey = Buffer.from(this.setup.privateKey, 'hex');
