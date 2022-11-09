@@ -8,9 +8,15 @@ type ProviderSetup = {
   manualConfirmEnable?: boolean
 }
 
+type Web3WalletPermission = {
+  parentCapability: string;
+  date?: number;
+}
+
 interface IMockProvider {
   request(args: { method: 'eth_accounts'; params: string[] }): Promise<string[]>
   request(args: { method: 'eth_requestAccounts'; params: string[] }): Promise<string[]>
+  request(args: { method: 'wallet_requestPermissions'; params: {[methodName: string]: {}}[] }): Promise<Web3WalletPermission[]>
 
   request(args: { method: 'net_version' }): Promise<number>
   request(args: { method: 'eth_chainId'; params: string[] }): Promise<string>
@@ -68,6 +74,22 @@ export class MockProvider implements IMockProvider {
           }).then(() => [this.selectedAddress])
         }
         return Promise.resolve([this.selectedAddress])
+
+      case 'wallet_requestPermissions': {
+        if (!params[0]) return Promise.reject(new Error('Invalid method parameter(s).'))
+
+        if (!params[0].eth_accounts) return Promise.reject(new Error(`The method "${Object.keys(params[0])[0]}" does not exist / is not available.`))
+
+        const permissions: Web3WalletPermission[] = [{ parentCapability: 'eth_accounts', date: Date.now() }]
+
+        if (this.setup.manualConfirmEnable) {
+          return new Promise((resolve, reject) => {
+            this.acceptEnable = resolve
+            this.rejectEnable = reject
+          }).then(() => permissions)
+        }
+        return Promise.resolve(permissions)
+      }
 
       case 'net_version':
         return Promise.resolve(this.setup.networkVersion)

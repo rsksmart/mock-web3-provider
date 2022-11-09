@@ -59,6 +59,21 @@ describe('default provider', function test(this: {
     })
   })
 
+  describe('wallet_requestPermissions', () => {
+    it('is correct with response', async () => {
+      Date.now = jest.fn(() => new Date(Date.UTC(2022, 1, 1)).valueOf())
+      const response = await this.provider.request({ method: 'wallet_requestPermissions', params: [{ eth_accounts: {} }] })
+
+      expect(response[0].parentCapability).toEqual('eth_accounts');
+      expect(response[0].date).toEqual(Date.now());
+    })
+
+    it('rejects if params are invalid', async () => {
+      await expect(this.provider.request({ method: 'wallet_requestPermissions', params: [] })).rejects.toThrow()
+      await expect(this.provider.request({ method: 'wallet_requestPermissions', params: [{ other_method: {} }] })).rejects.toThrow()
+    })
+  })
+
   describe('eth_chainId & net_version', () => {
     it('is correctly set', () => {
       expect(this.provider.networkVersion).toBe(31)
